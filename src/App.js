@@ -71,16 +71,26 @@ export default function Game() {
     setCurrentMove(nextMove);
   }
 
+  
+
   const moves = history.map((squares, move) => {
+    const isAtLastMove = history.length === (move + 1);
     let description;
-    if (move > 0) {
+    if (isAtLastMove) {
+      description = 'You are at move #' + move;
+    } else if (move > 0) {
       description = 'Go to move #' + move;
     } else {
       description = 'Go to game start';
     }
     return (
       <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
+        { isAtLastMove ? (
+            <p>{description}</p>
+          ) : (
+            <button onClick={() => jumpTo(move)}>{description}</button>
+          )
+        }
       </li>
     );
   });
