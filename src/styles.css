@@ -71,6 +71,10 @@ body {
   width: 34px;
 }
 
+.square.green {
+  color: green;
+}
+
 .board-row:after {
   clear: both;
   content: '';
