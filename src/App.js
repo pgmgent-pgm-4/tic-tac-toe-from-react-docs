@@ -22,7 +22,7 @@ function Board({ xIsNext, squares, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
-    onPlay(nextSquares);
+    onPlay(nextSquares, i);
   }
 
   const winner = calculateWinner(squares);
@@ -67,14 +67,17 @@ function Board({ xIsNext, squares, onPlay }) {
 }
 
 export default function Game() {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [history, setHistory] = useState([{ squares: Array(9).fill(null), moveAsArray: null }]);
   const [currentMove, setCurrentMove] = useState(0);
   const [sortOrder, setSortOrder] = useState("ascending");
   const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+  const currentSquares = history[currentMove].squares;
 
-  function handlePlay(nextSquares) {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+  function handlePlay(nextSquares, index) {
+    const nextHistory = [
+      ...history.slice(0, currentMove + 1),
+      { squares: nextSquares, moveAsArray: mapSquareIndexToRowAndColumn.get(index) }
+    ];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
@@ -87,13 +90,13 @@ export default function Game() {
     setSortOrder(sortOrder === "ascending" ? "descending" : "ascending");
   }  
 
-  const moves = history.map((squares, move) => {
-    const isAtLastMove = history.length === (move + 1);
+  const moves = history.map((historyData, move) => {  
+    const isAtLastMove = history.squares?.length === (move + 1);
     let description;
     if (isAtLastMove) {
-      description = 'You are at move #' + move;
+      description = `You are at move #${move} (${historyData.moveAsArray[0]}, ${historyData.moveAsArray[1]})`;
     } else if (move > 0) {
-      description = 'Go to move #' + move;
+      description = `Go to move #${move} (${historyData.moveAsArray[0]}, ${historyData.moveAsArray[1]})`;
     } else {
       description = 'Go to game start';
     }
@@ -145,3 +148,15 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+const mapSquareIndexToRowAndColumn = new Map([
+  [0, [1, 1]],
+  [1, [1, 2]],
+  [2, [1, 3]],
+  [3, [2, 1]],
+  [4, [2, 2]],
+  [5, [2, 3]],
+  [6, [3, 1]],
+  [7, [3, 2]],
+  [8, [3, 3]],
+]);
